@@ -12,6 +12,9 @@
         currentPlayer: 'X',
         gameActive: false,
         scores: { X: 0, O: 0, draw: 0 },
+        isMuted: false,
+        volume: 0.5,
+        audioStarted: false
     };
 
     const WIN_LINE_COORDS = {
@@ -59,6 +62,12 @@
     const modalMessage = document.getElementById('modal-message');
     const modalBtn = document.getElementById('modal-btn');
 
+    // Audio
+    const bgMusic = document.getElementById('bg-music');
+    const muteBtn = document.getElementById('mute-btn');
+    const muteIcon = document.getElementById('mute-icon');
+    const volumeSlider = document.getElementById('volume-slider');
+
     // ========== INIT ==========
     function init() {
         // Lobby events
@@ -81,6 +90,14 @@
         modalOverlay.addEventListener('click', (e) => {
             if (e.target === modalOverlay) closeModal();
         });
+
+        // Audio events
+        muteBtn.addEventListener('click', toggleMute);
+        volumeSlider.addEventListener('input', handleVolumeChange);
+
+        // Start audio on first user interaction
+        document.addEventListener('mousedown', startAudioOnce);
+        document.addEventListener('touchstart', startAudioOnce);
 
         // Socket events
         setupSocketListeners();
@@ -142,7 +159,7 @@
         lobbyEl.classList.add('hidden');
         gameEl.classList.remove('hidden');
         gameRoomCode.textContent = `Room: ${state.roomCode}`;
-        playerBadge.textContent = `You are ${state.mySymbol}`;
+        playerBadge.textContent = `You are ${state.turnIcon}`;
         playerBadge.className = `player-badge player-${state.mySymbol.toLowerCase()}`;
     }
 
@@ -383,6 +400,53 @@
             document.body.appendChild(confetti);
 
             setTimeout(() => confetti.remove(), 2500);
+        }
+    }
+
+    // ========== AUDIO LOGIC ==========
+    function startAudioOnce() {
+        if (state.audioStarted) return;
+        state.audioStarted = true;
+
+        bgMusic.volume = state.volume;
+        bgMusic.play().catch(err => {
+            console.log("Audio play failed:", err);
+            state.audioStarted = false; // allow retry
+        });
+
+        // Remove listeners
+        document.removeEventListener('mousedown', startAudioOnce);
+        document.removeEventListener('touchstart', startAudioOnce);
+    }
+
+    function toggleMute() {
+        state.isMuted = !state.isMuted;
+        bgMusic.muted = state.isMuted;
+
+        if (state.isMuted) {
+            muteIcon.innerHTML = `
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+            `;
+            muteBtn.title = "Unmute";
+        } else {
+            muteIcon.innerHTML = `
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            `;
+            muteBtn.title = "Mute";
+        }
+    }
+
+    function handleVolumeChange(e) {
+        state.volume = parseFloat(e.target.value);
+        bgMusic.volume = state.volume;
+
+        if (state.volume === 0 && !state.isMuted) {
+            toggleMute();
+        } else if (state.volume > 0 && state.isMuted) {
+            toggleMute();
         }
     }
 

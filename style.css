@@ -795,3 +795,155 @@ h1 {
         --cell-size: 75px;
     }
 }
+
+/* ========== AUDIO CONTROLS ========== */
+.audio-controls {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 30px;
+    padding: 8px 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: var(--transition);
+}
+
+.audio-controls:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    transition: var(--transition);
+}
+
+.btn-icon:hover {
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+.volume-slider-wrapper {
+    display: flex;
+    align-items: center;
+    width: 0;
+    overflow: hidden;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 0;
+}
+
+.audio-controls:hover .volume-slider-wrapper {
+    width: 100px;
+    opacity: 1;
+}
+
+#volume-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    outline: none;
+}
+
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--color-x);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--color-x-glow);
+    transition: var(--transition);
+}
+
+#volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+    background: var(--text-primary);
+}
+
+@media (max-width: 480px) {
+    .audio-controls {
+        bottom: 16px;
+        right: 16px;
+        padding: 6px 12px;
+    }
+
+    .audio-controls:hover .volume-slider-wrapper {
+        width: 80px;
+    }
+}
+
+/* ========== FOOTER ========== */
+.footer {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.footer p {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.footer a {
+    pointer-events: auto;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+.footer a:hover {
+    opacity: 1;
+    color: var(--color-x);
+}
+
+.heart {
+    color: var(--color-o);
+    display: inline-block;
+    animation: heartBeat 1.5s ease-in-out infinite;
+    margin: 0 2px;
+}
+
+@keyframes heartBeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@media (max-width: 480px) {
+    .footer {
+        bottom: 16px;
+    }
+
+    .footer p {
+        font-size: 0.75rem;
+    }
+}

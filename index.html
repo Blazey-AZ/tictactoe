@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe — Multiplayer</title>
+    <title>Tic TaT Toe — Multiplayer</title>
     <meta name="description"
         content="A beautifully designed real-time multiplayer Tic Tac Toe game powered by Socket.IO.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,8 +22,8 @@
     <!-- ========== LOBBY SCREEN ========== -->
     <div class="container lobby-container" id="lobby">
         <header>
-            <h1>Tic Tac Toe</h1>
-            <p class="subtitle">Real-time Multiplayer</p>
+            <h1>Tic TaT Toe</h1>
+            <p class="subtitle">Aliyaaa valichu!</p>
         </header>
 
         <div class="lobby-card" id="lobby-card">
@@ -61,7 +61,7 @@
 
         <!-- Waiting state after creating a room -->
         <div class="waiting-card hidden" id="waiting-card">
-            <p class="waiting-label">Share this code with your friend:</p>
+            <p class="waiting-label">Share this code with your friend and begin the 1v1 setta:</p>
             <div class="room-code-display" id="room-code-display"></div>
             <div class="waiting-dots">
                 <span>Waiting for opponent</span>
@@ -152,6 +152,28 @@
             <button class="btn btn-primary modal-btn" id="modal-btn">Rematch</button>
         </div>
     </div>
+
+    <!-- ========== AUDIO ========== -->
+    <audio id="bg-music" loop>
+        <source src="starostin-comedy-cartoon-funny-background-music-492540.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="audio-controls">
+        <button id="mute-btn" class="btn-icon" title="Toggle Mute">
+            <svg id="mute-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+        </button>
+        <div class="volume-slider-wrapper">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Made with <span class="heart">❤</span> <a href="https://www.youtube.com/@blazeyftw">Blazey</a></p>
+    </footer>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
