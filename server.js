@@ -104,11 +104,14 @@ io.on('connection', (socket) => {
             io.to(player.id).emit('roomJoined', { code, symbol: player.symbol });
         });
 
-        // Notify both players to start
-        io.to(code).emit('gameStart', {
-            board: room.board,
-            currentPlayer: room.currentPlayer,
-            scores: room.scores,
+        // Notify both players to start with their individual symbol assignment
+        room.players.forEach((player) => {
+            io.to(player.id).emit('gameStart', {
+                board: room.board,
+                currentPlayer: room.currentPlayer,
+                scores: room.scores,
+                mySymbol: player.symbol
+            });
         });
 
         console.log(`${socket.id} joined room ${code}. Assignments: Host=${room.players[0].symbol}, Joiner=${room.players[1].symbol}. Starter=${room.currentPlayer}`);
@@ -213,10 +216,17 @@ io.on('connection', (socket) => {
             room.gameActive = true;
             room.rematchVotes = new Set();
 
-            io.to(code).emit('rematchStart', {
-                board: room.board,
-                currentPlayer: room.currentPlayer,
-                scores: room.scores,
+            io.to(code).emit('moveMade', { index: -1, board: room.board }); // Reset client boards
+
+            io.to(code).emit('statusUpdate', { text: '' });
+
+            room.players.forEach((player) => {
+                io.to(player.id).emit('rematchStart', {
+                    board: room.board,
+                    currentPlayer: room.currentPlayer,
+                    scores: room.scores,
+                    mySymbol: player.symbol
+                });
             });
         } else {
             // Notify opponent that this player wants a rematch

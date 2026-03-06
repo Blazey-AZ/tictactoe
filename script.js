@@ -159,7 +159,9 @@
         lobbyEl.classList.add('hidden');
         gameEl.classList.remove('hidden');
         gameRoomCode.textContent = `Room: ${state.roomCode}`;
-        playerBadge.textContent = `You are ${state.turnIcon}`;
+
+        const name = state.mySymbol === 'X' ? 'NanduTaT' : 'KumarO';
+        playerBadge.textContent = `You are ${name}`;
         playerBadge.className = `player-badge player-${state.mySymbol.toLowerCase()}`;
     }
 
@@ -181,7 +183,8 @@
             joinRoomBtn.disabled = false;
         });
 
-        socket.on('gameStart', ({ board, currentPlayer, scores }) => {
+        socket.on('gameStart', ({ board, currentPlayer, scores, mySymbol }) => {
+            if (mySymbol) state.mySymbol = mySymbol;
             state.board = board;
             state.currentPlayer = currentPlayer;
             state.scores = scores;
@@ -245,8 +248,9 @@
             statusEl.style.color = 'var(--color-draw)';
         });
 
-        socket.on('rematchStart', ({ board, currentPlayer, scores }) => {
+        socket.on('rematchStart', ({ board, currentPlayer, scores, mySymbol }) => {
             closeModal();
+            if (mySymbol) state.mySymbol = mySymbol;
             state.board = board;
             state.currentPlayer = currentPlayer;
             state.scores = scores;
@@ -312,8 +316,10 @@
     // ========== UI UPDATES ==========
     function updateTurnIndicator() {
         const isMyTurn = state.currentPlayer === state.mySymbol;
+        const name = state.currentPlayer === 'X' ? 'NanduTaT' : 'KumarO';
+
         turnIcon.src = state.currentPlayer === 'X' ? 'nannu.jpg' : 'gumaaro.jpg';
-        turnText.textContent = isMyTurn ? "'s Turn (You)" : "'s Turn";
+        turnText.textContent = isMyTurn ? `${name}'s Turn (You)` : `${name}'s Turn`;
         turnIndicator.className = 'turn-indicator ' + (state.currentPlayer === 'X' ? 'x-turn' : 'o-turn');
 
         // Visual feedback: dim board when not your turn
