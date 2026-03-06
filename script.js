@@ -41,8 +41,7 @@
     const gameEl = document.getElementById('game');
     const cells = document.querySelectorAll('.cell');
     const turnIndicator = document.getElementById('turn-indicator');
-    const turnSymbol = document.getElementById('turn-symbol');
-    const turnText = document.getElementById('turn-text');
+    const turnIcon = document.getElementById('turn-icon');
     const scoreX = document.getElementById('score-x');
     const scoreO = document.getElementById('score-o');
     const scoreDraw = document.getElementById('score-draw');
@@ -185,7 +184,8 @@
 
             // Update the cell UI
             const cell = cells[index];
-            cell.textContent = symbol;
+            const imgSrc = symbol === 'X' ? 'player_x.png' : 'player_o.png';
+            cell.innerHTML = `<img src="${imgSrc}" class="cell-icon" alt="${symbol}">`;
             cell.classList.add('taken', symbol.toLowerCase());
 
             updateTurnIndicator();
@@ -295,7 +295,7 @@
     // ========== UI UPDATES ==========
     function updateTurnIndicator() {
         const isMyTurn = state.currentPlayer === state.mySymbol;
-        turnSymbol.textContent = state.currentPlayer;
+        turnIcon.src = state.currentPlayer === 'X' ? 'player_x.png' : 'player_o.png';
         turnText.textContent = isMyTurn ? "'s Turn (You)" : "'s Turn";
         turnIndicator.className = 'turn-indicator ' + (state.currentPlayer === 'X' ? 'x-turn' : 'o-turn');
 
@@ -326,7 +326,7 @@
 
     function resetBoardUI() {
         cells.forEach(cell => {
-            cell.textContent = '';
+            cell.innerHTML = '';
             cell.className = 'cell';
             cell.style.opacity = '';
         });
