@@ -164,10 +164,12 @@
             joinRoomBtn.disabled = false;
         });
 
-        socket.on('gameStart', ({ board, currentPlayer, scores }) => {
+        socket.on('gameStart', ({ board, currentPlayer, scores, yourSymbol, roomCode }) => {
             state.board = board;
             state.currentPlayer = currentPlayer;
             state.scores = scores;
+            state.mySymbol = yourSymbol;
+            state.roomCode = roomCode;
             state.gameActive = true;
 
             showGame();
@@ -228,13 +230,15 @@
             statusEl.style.color = 'var(--color-draw)';
         });
 
-        socket.on('rematchStart', ({ board, currentPlayer, scores }) => {
+        socket.on('rematchStart', ({ board, currentPlayer, scores, yourSymbol }) => {
             closeModal();
             state.board = board;
             state.currentPlayer = currentPlayer;
             state.scores = scores;
+            state.mySymbol = yourSymbol;
             state.gameActive = true;
 
+            showGame(); // Refresh badge in case symbol changed
             resetBoardUI();
             updateScoreboard();
             updateTurnIndicator();

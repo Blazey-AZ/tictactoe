@@ -87,22 +87,30 @@ io.on('connection', (socket) => {
             return;
         }
 
-        room.players.push({ id: socket.id, symbol: 'O' });
+        // Randomly assign symbols
+        const symbols = Math.random() < 0.5 ? ['X', 'O'] : ['O', 'X'];
+        room.players[0].symbol = symbols[0];
+        room.players[1].symbol = symbols[1];
+
         room.gameActive = true;
-        // Randomize starting player
+        // Randomize who starts ('X' or 'O')
         room.currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
+
         socket.join(code);
         socket.roomCode = code;
 
-        // Notify joiner
-        socket.emit('roomJoined', { code, symbol: 'O' });
-
-        // Notify both players to start
-        io.to(code).emit('gameStart', {
-            board: room.board,
-            currentPlayer: room.currentPlayer,
-            scores: room.scores,
+        // Notify both players to start with their specific symbols
+        room.players.forEach(p => {
+            io.to(p.id).emit('gameStart', {
+                board: room.board,
+                currentPlayer: room.currentPlayer,
+                scores: room.scores,
+                yourSymbol: p.symbol,
+                roomCode: room.code
+            });
         });
+
+        console.log(`Game started in room ${code}. Symbols assigned: ${room.players[0].id}:${room.players[0].symbol}, ${room.players[1].id}:${room.players[1].symbol}. Start: ${room.currentPlayer}`);
 
         console.log(`${socket.id} joined room ${code}`);
     });
@@ -190,16 +198,26 @@ io.on('connection', (socket) => {
         if (room.rematchVotes.size === 2) {
             // Both players want a rematch
             room.board = Array(9).fill('');
-            // Randomize starting player for rematch
+
+            // Randomize symbols again for fresh round
+            const symbols = Math.random() < 0.5 ? ['X', 'O'] : ['O', 'X'];
+            room.players[0].symbol = symbols[0];
+            room.players[1].symbol = symbols[1];
+
+            // Randomize starting player
             room.currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
             room.gameActive = true;
             room.rematchVotes = new Set();
 
-            io.to(code).emit('rematchStart', {
-                board: room.board,
-                currentPlayer: room.currentPlayer,
-                scores: room.scores,
+            room.players.forEach(p => {
+                io.to(p.id).emit('rematchStart', {
+                    board: room.board,
+                    currentPlayer: room.currentPlayer,
+                    scores: room.scores,
+                    yourSymbol: p.symbol
+                });
             });
+            console.log(`Rematch started in room ${code}. New symbols: ${room.players[0].id}:${room.players[0].symbol}, ${room.players[1].id}:${room.players[1].symbol}. Start: ${room.currentPlayer}`);
         } else {
             // Notify opponent that this player wants a rematch
             socket.to(code).emit('opponentWantsRematch');
