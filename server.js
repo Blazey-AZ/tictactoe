@@ -89,6 +89,8 @@ io.on('connection', (socket) => {
 
         room.players.push({ id: socket.id, symbol: 'O' });
         room.gameActive = true;
+        // Randomize starting player
+        room.currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
         socket.join(code);
         socket.roomCode = code;
 
@@ -188,7 +190,8 @@ io.on('connection', (socket) => {
         if (room.rematchVotes.size === 2) {
             // Both players want a rematch
             room.board = Array(9).fill('');
-            room.currentPlayer = 'X';
+            // Randomize starting player for rematch
+            room.currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
             room.gameActive = true;
             room.rematchVotes = new Set();
 
