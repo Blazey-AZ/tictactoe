@@ -164,12 +164,10 @@
             joinRoomBtn.disabled = false;
         });
 
-        socket.on('gameStart', ({ board, currentPlayer, scores, yourSymbol, roomCode }) => {
+        socket.on('gameStart', ({ board, currentPlayer, scores }) => {
             state.board = board;
             state.currentPlayer = currentPlayer;
             state.scores = scores;
-            state.mySymbol = yourSymbol;
-            state.roomCode = roomCode;
             state.gameActive = true;
 
             showGame();
@@ -186,7 +184,7 @@
 
             // Update the cell UI
             const cell = cells[index];
-            const imgSrc = symbol === 'X' ? 'player_x.png' : 'player_o.png';
+            const imgSrc = symbol === 'X' ? 'nannu.jpg' : 'gumaaro.jpg';
             cell.innerHTML = `<img src="${imgSrc}" class="cell-icon" alt="${symbol}">`;
             cell.classList.add('taken', symbol.toLowerCase());
 
@@ -230,15 +228,13 @@
             statusEl.style.color = 'var(--color-draw)';
         });
 
-        socket.on('rematchStart', ({ board, currentPlayer, scores, yourSymbol }) => {
+        socket.on('rematchStart', ({ board, currentPlayer, scores }) => {
             closeModal();
             state.board = board;
             state.currentPlayer = currentPlayer;
             state.scores = scores;
-            state.mySymbol = yourSymbol;
             state.gameActive = true;
 
-            showGame(); // Refresh badge in case symbol changed
             resetBoardUI();
             updateScoreboard();
             updateTurnIndicator();
@@ -299,7 +295,7 @@
     // ========== UI UPDATES ==========
     function updateTurnIndicator() {
         const isMyTurn = state.currentPlayer === state.mySymbol;
-        turnIcon.src = state.currentPlayer === 'X' ? 'player_x.png' : 'player_o.png';
+        turnIcon.src = state.currentPlayer === 'X' ? 'nannu.jpg' : 'gumaaro.jpg';
         turnText.textContent = isMyTurn ? "'s Turn (You)" : "'s Turn";
         turnIndicator.className = 'turn-indicator ' + (state.currentPlayer === 'X' ? 'x-turn' : 'o-turn');
 
