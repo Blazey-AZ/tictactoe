@@ -87,15 +87,22 @@ io.on('connection', (socket) => {
             return;
         }
 
-        room.players.push({ id: socket.id, symbol: 'O' });
+        // Randomly assign symbols
+        const symbols = Math.random() < 0.5 ? ['X', 'O'] : ['O', 'X'];
+        room.players[0].symbol = symbols[0];
+        room.players.push({ id: socket.id, symbol: symbols[1] });
+
         room.gameActive = true;
-        // Host (X) always starts first
-        room.currentPlayer = 'X';
+        // Randomly decide starting symbol (X or O)
+        room.currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
+
         socket.join(code);
         socket.roomCode = code;
 
-        // Notify joiner
-        socket.emit('roomJoined', { code, symbol: 'O' });
+        // Notify both players of their symbols and the game state
+        room.players.forEach((player) => {
+            io.to(player.id).emit('roomJoined', { code, symbol: player.symbol });
+        });
 
         // Notify both players to start
         io.to(code).emit('gameStart', {
@@ -104,7 +111,7 @@ io.on('connection', (socket) => {
             scores: room.scores,
         });
 
-        console.log(`${socket.id} joined room ${code}`);
+        console.log(`${socket.id} joined room ${code}. Assignments: Host=${room.players[0].symbol}, Joiner=${room.players[1].symbol}. Starter=${room.currentPlayer}`);
     });
 
     // --- Make Move ---
@@ -190,8 +197,19 @@ io.on('connection', (socket) => {
         if (room.rematchVotes.size === 2) {
             // Both players want a rematch
             room.board = Array(9).fill('');
-            // Host (X) always starts first
-            room.currentPlayer = 'X';
+
+            // Re-randomize symbols
+            const symbols = Math.random() < 0.5 ? ['X', 'O'] : ['O', 'X'];
+            room.players[0].symbol = symbols[0];
+            room.players[1].symbol = symbols[1];
+
+            // Notify both players of their (potentially) new symbols
+            room.players.forEach((player) => {
+                io.to(player.id).emit('roomJoined', { code: room.code, symbol: player.symbol });
+            });
+
+            // Randomly decide starting player
+            room.currentPlayer = Math.random() < 0.5 ? 'X' : 'O';
             room.gameActive = true;
             room.rematchVotes = new Set();
 
